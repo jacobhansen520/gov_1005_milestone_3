@@ -1,12 +1,14 @@
 ---
 title: "Milestone 3"
 author: "Jacob Hansen"
-date: "2/23/2020"
+date: "2/28/2020"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+# Reading in relevant libraries.
 
 library(readxl)
 library(readr)
@@ -25,6 +27,11 @@ How can a political party maximize the utility of voter registration? I examine 
 # the data available to me. For this reason, I plan on using January data. I
 # plan on using the last few years worth of data, but may decide to reach
 # further back if time allows and it seems relevant.
+
+# I'm also setting "message" and "warning" to FALSE throughout, because warnings
+# are arising from R not knowing what to do with unnecessary empty columns in
+# the uncleaned data sets. In the future I may want to edit how I'm cleaning the
+# data, but for now the messages and warnings do not seem particularly relevant.
 
 jan_2017 <- read.csv("2017-01-01.csv", skip = 4) %>% 
   clean_names() %>% 
@@ -89,6 +96,43 @@ jan_2017_to_2020 <- jan_2017_to_2019 %>%
   select(- date_period)
 ```
 
+Using data from the Arizona Secretary of State, I joined several years' worth of voter registration data for every Arizona county to see how the registration numbers have changed over the last four years.
+
+Because Arizona has a large Native American population, I had to find the appropriate race variable and include it in my census analysis. Below is an example from Pima County, which featured a large percentage of the Tohono O'odham Nation.
+
+Next steps for me will be to figure out the best way to visualize changes in voter registration data, and to determine whether or not I want to add earlier data to my analysis.
+
+```{r, include=FALSE}
+# Here, I simply copied the county analysis code we found in class, but I had to
+# add a new "racevars" for Native Americans. This was relatively easy to find.
+
+racevars <- c(White = "B02001_002", 
+              Black = "B02001_003", 
+              Asian = "B02001_005",
+              Hispanic = "B03003_003",
+              Native_American = "B02001_004")
+pima <- get_acs(geography = "tract",
+                  variables = racevars, 
+                  year = 2018,
+                  state = "AZ",
+                  county = "Pima County",
+                  geometry = TRUE,
+                  summary_var = "B02001_001")
+```
+
+
+```{r, echo=FALSE}
+pima %>%
+  mutate(Percent = 100 * (estimate / summary_est)) %>%
+  ggplot(aes(fill = Percent, color = Percent)) +
+  facet_wrap(~ variable) +
+  geom_sf() +
+  scale_fill_viridis_c(direction = -1) +
+  scale_color_viridis_c(direction = -1) +
+  labs(title = "Racial geography of Pima County, Arizona",
+       caption = "Source: American Community Survey 2014-2018") +
+  theme_void()
+```
 
 
 
