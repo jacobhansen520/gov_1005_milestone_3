@@ -45,6 +45,14 @@ jan_2017 <- read.csv("2017-01-01.csv", skip = 4) %>%
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+# I'm going through basically the same process for each of the data sets I'm
+# cleaning. Originally I simply cut them down and tried to join and tidy the
+# data later, but eventually realized that it was much easier to tidy each data
+# set before joining them. After the tidying and joining was done, I was left
+# with a data set that had the voter registration numbers for each party in each
+# county for every January between 2017 and 2020.
+
 jan_2018 <- read.csv("2018-01-01.csv", skip = 4) %>% 
   clean_names() %>% 
   head(45) %>% 
